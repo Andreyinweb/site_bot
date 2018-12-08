@@ -5,7 +5,7 @@
 ## Setting up
 
 * Clone the repo
-* $ git clone <https://github.com/Andreyinweb/bot_site.git>
+* $ git clone <https://github.com/Andreyinweb/site_bot.git>
 
 * Сreate file config.env
 
