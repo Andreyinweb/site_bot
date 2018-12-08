@@ -1,0 +1,14 @@
+*.pyc
+*.pyo
+env
+venv
+*.env
+env*
+*.egg
+*.egg-info
+*.sqlite
+.idea
+dump.rdb
+.vscode/
+butyvenv
+__pycache__
