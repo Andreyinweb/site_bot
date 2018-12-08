@@ -21,10 +21,10 @@ URL_EDITNEWS = URL + "/admin.php?mod=editnews&action=list"
 # user = "hkbklor1"
 # password = "knknnjknjj"
 
-TIMEPAUS = 0 # Number of seconds between requests. Количество секунд между запросами.
-ADD_NEWS = False # Добавлять новость или нет
-HTML_BOT = True # Записывать в файл HTML запросы или нет.
-LOG_BOT = True # Записывать в файл log действий или нет.
+TIMEPAUS = 0     # Number of seconds between requests. Количество секунд между запросами.
+ADD_NEWS = False  # Добавлять новость или нет
+HTML_BOT = True  # Записывать в файл HTML запросы или нет.
+LOG_BOT = True   # Записывать в файл log действий или нет.
 
 title_news = "Логика"
 

@@ -10,6 +10,7 @@ from time import sleep
 number_HTML = 0
 form_value = ''
 list_dict_news = dict()
+news_dict = dict()
 session = Session()
 
 # Cтраницa Входа
@@ -29,7 +30,8 @@ for tag in soup:
         print("Нужен вход :" + form_value) #del
         # запрос Вход
         sleep(TIMEPAUS)
-        response = session.post( URL_LOGIN,  data  =  { 'username': user, 'password': password, "subaction": "dologin"})
+        response = session.post( URL_LOGIN,  data  =  { 'username': user, 'password': password,
+                                 "subaction": "dologin"})
         log_bot("Вход status_code :  " + str(response.status_code))
         number_HTML = file_html(response.text + '\n', number_HTML) # Запись в файл HTML
         mistake(response,"запрос Вход")
@@ -51,6 +53,7 @@ for tag in soup:
 
 if ADD_NEWS:
         # Запрос добавления новости
+        sleep(TIMEPAUS)
         response = session.get(URL_ADDNEWS)
         number_HTML = file_html(response.text + '\n', number_HTML) # Запись в файл HTML
         print("-------------------------------------------")
@@ -66,26 +69,47 @@ if ADD_NEWS:
                         user_hash = str(tag.get('value'))
 
         #  Добавление новости
-        response = session.post(URL_ADDNEWS,  data  =  { "user_hash":user_hash, 'title': title_news, 'allow_date':"yes", 'short_story': short_story,
-                "full_story": full_story, "approve":"1", 'mod': 'addnews', 'action': "doaddnews", 'submit': "Добавить"})
+        sleep(TIMEPAUS)
+        response = session.post(URL_ADDNEWS,  data  =  { "user_hash":user_hash, 'title': title_news, 'allow_date':"yes",
+                                'short_story': short_story, "full_story": full_story, "approve":"1",
+                                'mod': 'addnews', 'action': "doaddnews", 'submit': "Добавить"})
         number_HTML = file_html(response.text + '\n', number_HTML) # Запись в файл HTML
-        log_bot(URL_ADDNEWS  + "Добавление новости:  " + str(response.status_code))
-        mistake(response,"Добавление новости")
+        log_bot(URL_ADDNEWS  + "  Добавление новости:  " + str(response.status_code))
+        mistake(response,"   Добавление новости")
+        # Проверка новости
+        response = session.get(URL_EDITNEWS)
+        # number_HTML = file_html(response.text + '\n', number_HTML) # Запись в файл HTML
+        print("-------------------------------------------")
+        print(URL_EDITNEWS  + "    status_code :  " + str(response.status_code))
+        log_bot(URL_EDITNEWS  + "    status_code :  " + str(response.status_code))
+        mistake(response,"Проверка новости")
+
+        soup = BeautifulSoup(response.content, 'html.parser', parse_only=SoupStrainer('a'))
+        for href in soup:
+                if href.get('title') == 'Редактировать данную новость':
+                        if href.text == title_news:
+                                news_dict.update({str(href.text) : str(href.get('href'))})
+                                print("Новость Добавлена : ", title_news + URL + href.get('href'))
+                                log_bot("Новость Добавлена :  " + title_news + '  ' + URL + str(href.get('href')))
+        if not news_dict:                        
+                print("НЕ Добавлена Новость: ", title_news)
+                log_bot("НЕ Добавлена Новость: ", title_news)
+
 else:
         print("НЕ добавляем новость. config_bot ADD_NEWS =", ADD_NEWS)
         log_bot("НЕ добавляем новость. config_bot ADD_NEWS")
 
-# Запрос редактирования новости
+# Запрос списка редактирования новостей
+sleep(TIMEPAUS)
 response = session.get(URL_EDITNEWS)
 number_HTML = file_html(response.text + '\n', number_HTML) # Запись в файл HTML
 print("-------------------------------------------")
 print(URL_EDITNEWS  + "    status_code :  " + str(response.status_code))
 log_bot(URL_EDITNEWS  + "    status_code :  " + str(response.status_code))
-mistake(response,"Запрос редактирования новости")
+mistake(response,"Запрос списка редактирования новостей")
 
 soup = BeautifulSoup(response.content, 'html.parser', parse_only=SoupStrainer('a'))
 for href in soup:
-        # print(href.text)
         if href.get('title') == 'Редактировать данную новость':
                 if href.text == title_news:
                         print("Новость Добавлена : ", URL + href.get('href'))
