@@ -13,6 +13,8 @@ list_dict_news = dict()
 news_dict = dict()
 session = Session()
 
+
+
 # Cтраницa Входа
 response = session.get(URL_LOGIN)
 print("LOG_BOT:", LOG_BOT)
@@ -99,29 +101,54 @@ else:
         print("НЕ добавляем новость. config_bot ADD_NEWS =", ADD_NEWS)
         log_bot("НЕ добавляем новость. config_bot ADD_NEWS")
 
-# Запрос списка редактирования новостей
-sleep(TIMEPAUS)
-response = session.get(URL_EDITNEWS)
-number_HTML = file_html(response.text + '\n', number_HTML) # Запись в файл HTML
-print("-------------------------------------------")
-print(URL_EDITNEWS  + "    status_code :  " + str(response.status_code))
-log_bot(URL_EDITNEWS  + "    status_code :  " + str(response.status_code))
-mistake(response,"Запрос списка редактирования новостей")
+# Создание списка новостей
+if PARSER_NEWS:
+        # Запрос списка редактирования новостей
+        sleep(TIMEPAUS)
+        response = session.get(URL_EDITNEWS)
+        number_HTML = file_html(response.text + '\n', number_HTML) # Запись в файл HTML
+        print("-------------------------------------------")
+        print(URL_EDITNEWS  + "    status_code :  " + str(response.status_code))
+        log_bot(URL_EDITNEWS  + "    status_code :  " + str(response.status_code))
+        mistake(response,"Запрос списка редактирования новостей")
 
-soup = BeautifulSoup(response.content, 'html.parser', parse_only=SoupStrainer('a'))
-for href in soup:
-        if href.get('title') == 'Редактировать данную новость':
-                if href.text == title_news:
-                        print("Новость Добавлена : ", URL + href.get('href'))
+        soup = BeautifulSoup(response.content, 'html.parser', parse_only=SoupStrainer('a'))
+        for href in soup:
+                if href.get('title') == 'Редактировать данную новость':
+                        if href.text == title_news:
+                                print("Новость Добавлена : ", URL + href.get('href'))
 
-for href in soup:
-        # print(href.text)
-        if href.get('title') == 'Редактировать данную новость':
-                # print(href.text,href.get('href'))
-                list_dict_news.update({str(href.get('href')):str(href.text)})
-log_bot("Новости на сайте: " + str(list_dict_news))
-# for news in list_dict_news:
-#         print(news,"      ",list_dict_news.get(news))
+        for href in soup:
+                if href.get('title') == 'Редактировать данную новость':
+                        list_dict_news.update({str(href.get('href')):str(href.text)})
+        log_bot("Новости на сайте: " + str(list_dict_news))
+
+        # Сохраняем новости в файл
+        file_news = open('file_news.txt', 'w')
+        count = 0 
+        for news in list_dict_news:
+                response = session.get(URL + news)
+                file_news.write( URL + news + '\n') 
+                print(news  + "    status_code :  " + str(response.status_code))
+                number_HTML = file_html(response.text + '\n', number_HTML) # Запись в файл HTML
+
+                soup = BeautifulSoup(response.content, 'html.parser', parse_only=SoupStrainer('input'))
+                for tag in soup:
+                        if tag.get('name') == 'title':
+                                file_news.write('title' + '\n' + str(tag.get('value')) + '\n' + 'endtitle' + '\n')
+
+                soup = BeautifulSoup(response.content, 'html.parser', parse_only=SoupStrainer('textarea'))
+                for tag in soup:
+                        if tag.get('name') == 'short_story':
+                                file_news.write('short_story' + '\n' + str(tag.text) + '\n' + 'endshort_story' + '\n')
+                        if tag.get('name') == 'full_story':
+                                file_news.write('full_story' + '\n' + str(tag.text) + '\n' + 'endfull_story' + '\n')
+                                file_news.write('---------------------------------------------------------------------------------------' + '\n') 
+                count += 1
+        
+        file_news.write(']' + '\n')
+        file_news.close()
+        print("Записано в файл " + str(count) + " новостей")
 
 if number_HTML > 0 :
         print("Записано " + str(number_HTML) + " файла HTML")

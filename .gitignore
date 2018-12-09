@@ -12,3 +12,4 @@ dump.rdb
 .vscode/
 butyvenv
 __pycache__
+file_news.txt

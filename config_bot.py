@@ -2,7 +2,7 @@ import os
 
 if os.path.exists('config.env'):
     print('Импорт настроек config.env')
-    for line in open('config.env'):
+    for line in open('config.env', 'r'):
         var = line.strip().split('=')
         if len(var) == 2:
             os.environ[var[0]] = var[1].replace("\"", "")
@@ -21,10 +21,23 @@ URL_EDITNEWS = URL + "/admin.php?mod=editnews&action=list"
 # user = "hkbklor1"
 # password = "knknnjknjj"
 
-TIMEPAUS = 0     # Number of seconds between requests. Количество секунд между запросами.
-ADD_NEWS = False  # Добавлять новость или нет
-HTML_BOT = True  # Записывать в файл HTML запросы или нет.
-LOG_BOT = True   # Записывать в файл log действий или нет.
+TIMEPAUS = 0        # Number of seconds between requests. Количество секунд между запросами.
+ADD_NEWS = False     # Добавлять новость или нет
+PARSER_NEWS = True  # Парсить новости или нет
+HTML_BOT = True     # Записывать в файл HTML запросы или нет.
+LOG_BOT = True      # Записывать в файл log действий или нет.
+
+
+# title_news = ""
+# short_story =''
+# full_story = ''
+# from ztest import news_data   #del
+# news_list_data = news_data()  #del
+# for title in news_list_data:
+#     title_news = title
+#     short_story = news_list_data[title][0]
+#     full_story= news_list_data[title][1]
+
 
 title_news = "Логика"
 
